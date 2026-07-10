@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rentmil – Vývoj hledanosti KWS 2026/2025</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f6f8;
+      color: #2d2d2d;
+      position: relative;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 340px;
+      background: linear-gradient(to top, rgba(232,120,58,.13) 0%, rgba(245,164,93,.06) 50%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    main, header, footer { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #c45a2a 0%, #e8783a 60%, #d4622e 100%);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(180,70,30,.30);
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-claim {
+      font-size: 13px;
+      color: rgba(255,255,255,.85);
+      text-align: right;
+      white-space: nowrap;
+      font-style: normal;
+    }
+    .header-claim strong {
+      display: block;
+      font-style: normal;
+      font-size: 12px;
+      color: rgba(255,255,255,.5);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .logo-svg { height: 44px; width: auto; }
+    header .tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,.75);
+      border-left: 1px solid rgba(255,255,255,.3);
+      padding-left: 16px;
+      margin-left: 4px;
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 1140px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 18px;
+    }
+
+    /* ── Two-column layout ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Table (summary) ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    thead th {
+      text-align: left;
+      padding: 9px 12px;
+      background: #f9f9f9;
+      color: #555;
+      font-weight: 600;
+      border-bottom: 2px solid #eee;
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #fafafa; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .badge.neg { background: #fff0ef; color: #d94141; }
+    .badge.pos { background: #edfaf3; color: #29a86e; }
+
+    /* ── KWS list table ── */
+    .kws-wrap {
+      max-height: 420px;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 1px solid #f0f0f0;
+    }
+    .kws-wrap table { font-size: 12.5px; }
+    .kws-wrap thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 8px 10px;
+    }
+    .kws-wrap tbody td { padding: 7px 10px; }
+
+    .comp-high   { color: #d94141; font-weight: 600; }
+    .comp-medium { color: #e09b00; font-weight: 600; }
+    .comp-low    { color: #29a86e; font-weight: 600; }
+
+    /* ── Chart toggle ── */
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .toggle-group {
+      display: flex;
+      background: #f2f2f2;
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .toggle-btn {
+      border: none;
+      background: transparent;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .toggle-btn.active {
+      background: #fff;
+      color: #c45a2a;
+      box-shadow: 0 1px 3px rgba(0,0,0,.12);
+    }
+
+    /* ── Chart ── */
+    .chart-wrap { position: relative; height: 320px; }
+
+    /* ── Executive summary ── */
+    .exec-summary {
+      font-size: 14px;
+      line-height: 1.75;
+      color: #3a3a3a;
+    }
+    .exec-summary p { margin-bottom: 12px; }
+    .exec-summary p:last-child { margin-bottom: 0; }
+    .exec-highlight {
+      display: inline-block;
+      background: #fff5f3;
+      color: #c45a2a;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 0 5px;
+    }
+    .exec-pos {
+      display: inline-block;
+      background: #edfaf3;
+      color: #29a86e;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 0 5px;
+    }
+
+    /* ── KPI section ── */
+    .kpi-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 14px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 760px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
+    .kpi-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 22px 20px 18px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #f0ece8;
+      box-shadow: 0 2px 8px rgba(196,90,42,.08);
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: -24px; right: -24px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(232,96,74,.08);
+    }
+    .kpi-icon {
+      font-size: 20px;
+      margin-bottom: 12px;
+      opacity: .9;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #b0a09a;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #c45a2a;
+      line-height: 1.1;
+    }
+    .kpi-value.neg { color: #d94141; }
+    .kpi-value.pos { color: #29a86e; }
+    .kpi-value span { font-size: 14px; font-weight: 500; color: #ccc; }
+
+    /* ── Footer ── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #ccc;
+      padding: 28px 20px 20px;
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-left">
+    <svg class="logo-svg" viewBox="0 0 200 90" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stop-color="#e8604a"/>
+          <stop offset="100%" stop-color="#f5a45d"/>
+        </linearGradient>
+      </defs>
+      <path d="M 30,18 C 50,2 130,0 165,18 C 195,33 200,55 185,68 C 172,80 148,88 118,86 C 88,84 60,90 38,82 C 12,72 5,50 30,18 Z" fill="url(#g)"/>
+      <text x="100" y="56"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        font-size="26" font-weight="700" fill="white" text-anchor="middle">Rentmil</text>
+    </svg>
+    <span class="tagline">Přehled hledanosti KWS</span>
+  </div>
+  <div class="header-claim">Data v klidu. Vy bazénujete, my reportujeme.</div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main>
+  <h1>Rentmil – Vývoj hledanosti vybraných klíčových slov 2026 / 2025</h1>
+  <p class="subtitle">KWs bazény · data ke Červnu 2026</p>
+
+  <!-- ROW 1: tabulka + executive summary -->
+  <div class="two-col">
+
+    <!-- Tabulka meziroční změny -->
+    <div class="card">
+      <div class="card-title">Meziroční porovnání</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Měsíc</th>
+            <th class="num">2025</th>
+            <th class="num">2026</th>
+            <th style="text-align:center">Změna</th>
+          </tr>
+        </thead>
+        <tbody id="tbl"></tbody>
+      </table>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="card">
+      <div class="card-title">Executive Summary</div>
+      <div class="exec-summary">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Celková hledanost leden–červen 2026 dosáhla <span class="exec-highlight">804 140</span> dotazů – meziroční pokles <span class="exec-highlight">−12 %</span> vs. 2025.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Největší propady na začátku roku: leden <span class="exec-highlight">−43 %</span>, únor <span class="exec-highlight">−22 %</span> – sezóna nastoupila výrazně později než v 2025.</span></li>
+<li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Ze 70 sledovaných KWS jich <span class="exec-pos">22 roste</span> meziročně – potenciál pro cílené posílení výkonu v těchto klíčových slovech.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Celkový pokles hledanosti odráží širší tržní trend – doporučujeme průběžně sledovat vývoj ve 2. pololetí 2026.</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Graf (full width) -->
+  <div class="card">
+    <div class="chart-header">
+      <div class="card-title" style="margin-bottom:0">Graf hledanosti a meziročního vývoje</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="btn-bar" onclick="setChartType('bar')">⬛ Sloupcový</button>
+          <button class="toggle-btn" id="btn-line" onclick="setChartType('line')">📈 Spojnicový</button>
+        </div>
+        <button class="toggle-btn" id="btn-change" onclick="toggleChangeLine()" style="background:#f2f2f2;border-radius:8px;padding:5px 12px;font-size:11px;color:#6366f1;border:1px solid #e0e0ff;">∼ Změna</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <!-- ROW 3: KPI -->
+  <div class="kpi-section-title">KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon">🔍</div>
+      <div class="kpi-label">Celková hledanost 2026</div>
+      <div class="kpi-value">804 140</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📉</div>
+      <div class="kpi-label">YoY změna</div>
+      <div class="kpi-value neg">−12 %</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🗂️</div>
+      <div class="kpi-label">Počet sledovaných KWS</div>
+      <div class="kpi-value">70</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">Rostoucích KWS</div>
+      <div class="kpi-value pos">22 <span>/ 70</span></div>
+    </div>
+  </div>
+
+  <!-- ROW 4: seznam KWS -->
+  <div class="card">
+    <div class="card-title">Seznam klíčových slov (souhrn) · <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#bbb">70 klíčových slov</span></div>
+    <div class="kws-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Klíčové slovo</th>
+            <th class="num">Průměr / měsíc</th>
+            <th style="text-align:center">YoY</th>
+            <th style="text-align:center">Konkurence</th>
+          </tr>
+        </thead>
+        <tbody id="kws-tbl"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>© 2026 Rentmil · Interní přehled pro klienta</span>
+  <span>Vytvořeno pro Rentmil by Miriam from <strong style="color:#bbb">MAIRA TEAM</strong></span>
+</footer>
+
+<script>
+/* ── Prognose (same) data ── */
+const months = ['Leden','Únor','Březen','Duben','Květen','Červen'];
+const v2025  = [91590, 83060, 112290, 133360, 159380, 312730];
+const v2026  = [52480, 64970, 107640, 100410, 204690, 274950];
+const change = [-43, -22, -4, -25, 28, -12];
+
+/* ── Table ── */
+const fmt = n => n.toLocaleString('cs-CZ');
+const tbody = document.getElementById('tbl');
+months.forEach((m, i) => {
+  const pos = change[i] >= 0;
+  tbody.innerHTML += `
+    <tr>
+      <td><strong>${m}</strong></td>
+      <td class="num">${fmt(v2025[i])}</td>
+      <td class="num">${fmt(v2026[i])}</td>
+      <td style="text-align:center">
+        <span class="badge ${pos ? 'pos' : 'neg'}">${pos ? '+' : ''}${change[i]}%</span>
+      </td>
+    </tr>`;
+});
+
+/* ── Chart ── */
+const sharedOpts = {
+  responsive: true, maintainAspectRatio: false,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: 'bottom', labels: { boxWidth: 14, padding: 14 } },
+    tooltip: {
+      callbacks: {
+        label: c => c.dataset.yAxisID === 'y2'
+          ? ` Změna: ${c.raw >= 0 ? '+' : ''}${c.raw}%`
+          : ` ${c.dataset.label}: ${c.raw.toLocaleString('cs-CZ')}`
+      }
+    }
+  },
+  scales: {
+    y:  { position: 'left', grid: { color: '#f0f0f0' },
+          ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v, color: '#888' },
+          title: { display: true, text: 'Hledanost', color: '#aaa', font: { size: 11 } } },
+    y2: { position: 'right', grid: { drawOnChartArea: false },
+          ticks: { callback: v => v + '%', color: '#6366f1' },
+          title: { display: true, text: 'Změna (%)', color: '#6366f1', font: { size: 11 } } },
+    x:  { grid: { display: false }, ticks: { color: '#555' } }
+  }
+};
+
+function buildDatasets(type) {
+  return [
+    {
+      type, label: '2025', data: v2025,
+      backgroundColor: type === 'bar' ? 'rgba(232,96,74,.20)' : 'rgba(232,96,74,.10)',
+      borderColor: '#e8604a', borderWidth: 2,
+      ...(type === 'bar' ? { borderRadius: 4 } : { tension: 0.35, pointRadius: 5, pointBackgroundColor: '#e8604a', pointBorderColor: '#fff', pointBorderWidth: 2, fill: false }),
+      yAxisID: 'y', order: 2
+    },
+    {
+      type, label: '2026', data: v2026,
+      backgroundColor: type === 'bar' ? 'rgba(245,164,93,.20)' : 'rgba(245,164,93,.10)',
+      borderColor: '#f5a45d', borderWidth: 2,
+      ...(type === 'bar' ? { borderRadius: 4 } : { tension: 0.35, pointRadius: 5, pointBackgroundColor: '#f5a45d', pointBorderColor: '#fff', pointBorderWidth: 2, fill: false }),
+      yAxisID: 'y', order: 2
+    },
+    {
+      type: 'line', label: 'Změna 25/26 (%)', data: change,
+      borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.10)',
+      pointBackgroundColor: change.map(v => v >= 0 ? '#29a86e' : '#d94141'),
+      pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6,
+      fill: true, tension: 0.35, yAxisID: 'y2', order: 1
+    }
+  ];
+}
+
+const ctx = document.getElementById('chart').getContext('2d');
+let myChart = new Chart(ctx, {
+  data: { labels: months, datasets: buildDatasets('bar') },
+  options: sharedOpts
+});
+
+let showChange = true;
+let currentType = 'bar';
+
+function setChartType(type) {
+  currentType = type;
+  rebuildChart();
+  document.getElementById('btn-bar').classList.toggle('active', type === 'bar');
+  document.getElementById('btn-line').classList.toggle('active', type === 'line');
+}
+
+function toggleChangeLine() {
+  showChange = !showChange;
+  const btn = document.getElementById('btn-change');
+  btn.style.color = showChange ? '#6366f1' : '#bbb';
+  btn.style.borderColor = showChange ? '#e0e0ff' : '#eee';
+  btn.textContent = showChange ? '∼ Změna' : '∼ Změna';
+  btn.style.textDecoration = showChange ? 'none' : 'line-through';
+  rebuildChart();
+}
+
+function rebuildChart() {
+  const datasets = buildDatasets(currentType);
+  if (!showChange) datasets.splice(2, 1); // remove change line
+  const opts = showChange ? sharedOpts : {
+    ...sharedOpts,
+    scales: { ...sharedOpts.scales, y2: { display: false } }
+  };
+  myChart.destroy();
+  myChart = new Chart(ctx, { data: { labels: months, datasets }, options: opts });
+}
+
+/* ── KWS list ── */
+const kws = [
+  ["nerezove bazeny",90,"−35%","High"],
+  ["bazen na klic",90,"0%","High"],
+  ["zastreseni bazenu 6x3",90,"−18%","High"],
+  ["bazen 4m",90,"91%","High"],
+  ["maly bazen",90,"−35%","High"],
+  ["bazény levně",90,"0%","High"],
+  ["bazen venkovni",90,"−19%","High"],
+  ["celorocni bazen",90,"−46%","High"],
+  ["bazen 3x6",90,"−47%","High"],
+  ["bazen slaný",90,"0%","Low"],
+  ["maly nerezovy bazen",90,"−29%","High"],
+  ["bazen usti",880,"23%","Low"],
+  ["bazen azuro",720,"−34%","High"],
+  ["nadzemní bazény celoroční",590,"−70%","High"],
+  ["bazeny cena",590,"−85%","High"],
+  ["zapuštěné bazény",480,"−45%","High"],
+  ["nerezovy bazen",480,"−28%","High"],
+  ["plastovy bazen",480,"0%","High"],
+  ["nadzemni bazen",480,"−23%","High"],
+  ["zapuštěný bazen",480,"−45%","High"],
+  ["laminatovy bazen",390,"−45%","High"],
+  ["plastové bazény",320,"−19%","High"],
+  ["pevné nadzemní bazény",320,"−52%","High"],
+  ["bazen 5x3",320,"376%","High"],
+  ["bazény",27100,"−33%","High"],
+  ["bazen do zeme",260,"0%","High"],
+  ["laminátové bazény",260,"−33%","High"],
+  ["bazeny kostelec",260,"−18%","Medium"],
+  ["bazen karlovy vary",260,"−19%","Low"],
+  ["nerezové bazény",210,"−33%","High"],
+  ["bazen na zahradu",210,"−19%","High"],
+  ["zahradni bazen",210,"−33%","High"],
+  ["zahradní bazen",210,"−33%","High"],
+  ["bazen 3 66",210,"−19%","High"],
+  ["nerezový bazény",210,"−33%","High"],
+  ["zahradní bazény",1900,"−54%","High"],
+  ["bazény české budějovice",1900,"0%","Low"],
+  ["bazen české budějovice",1900,"0%","Low"],
+  ["bazen",18100,"−18%","High"],
+  ["bazen 3m",170,"−33%","High"],
+  ["celoroční nadzemní bazény",170,"−33%","High"],
+  ["nadzemni bazeny",170,"−18%","High"],
+  ["bazen nadzemni",170,"−19%","High"],
+  ["bazény shop",170,"−19%","High"],
+  ["bazen zastreseni",170,"−19%","High"],
+  ["bazen klise",170,"−21%","Low"],
+  ["bazen roudnice",170,"−18%","Low"],
+  ["bazénu",170,"−46%","High"],
+  ["levné bazény",140,"−56%","High"],
+  ["zapuštěné bazény cena",140,"100%","High"],
+  ["bazény azuro",140,"−46%","High"],
+  ["bazény na míru",140,"−21%","High"],
+  ["bazen 6x3",140,"−19%","High"],
+  ["bazen ovalny",140,"−33%","High"],
+  ["venkovni bazen",140,"−34%","High"],
+  ["luxusní nadzemní bazény",140,"40%","High"],
+  ["bazeny do zahrady",140,"767%","High"],
+  ["bazen uh",140,"56%","Low"],
+  ["bazen havlíčkův brod",1300,"−12%","Low"],
+  ["zapusteny bazen",110,"24%","High"],
+  ["luxusní bazény",110,"−36%","High"],
+  ["levné bazény do země",110,"191%","High"],
+  ["prodej bazénů",110,"21%","High"],
+  ["barva na bazény",110,"−19%","High"],
+  ["bazen 7x3",110,"586%","High"],
+  ["bazeny albixon",110,"−18%","High"],
+  ["levny bazen do zeme",110,"191%","High"],
+  ["plastové bazény skladem",110,"800%","High"],
+];
+
+const kwsTbl = document.getElementById('kws-tbl');
+kws.forEach(([kw, avg, yoy, comp]) => {
+  const yoyNum = parseInt(yoy.replace('−','-').replace('%',''));
+  const isPos = yoyNum > 0;
+  const compClass = comp === 'High' ? 'comp-high' : comp === 'Medium' ? 'comp-medium' : 'comp-low';
+  const compLabel = comp === 'High' ? 'Vysoká' : comp === 'Medium' ? 'Střední' : 'Nízká';
+  kwsTbl.innerHTML += `
+    <tr>
+      <td>${kw}</td>
+      <td class="num">${avg.toLocaleString('cs-CZ')}</td>
+      <td style="text-align:center">
+        <span class="badge ${isPos ? 'pos' : 'neg'}" style="font-size:11px">${isPos ? '+' : ''}${yoy.replace('−','-')}</span>
+      </td>
+      <td style="text-align:center" class="${compClass}">${compLabel}</td>
+    </tr>`;
+});
+</script>
+</body>
+</html>
