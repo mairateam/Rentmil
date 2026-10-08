@@ -311,7 +311,7 @@
 <!-- ══ MAIN ══ -->
 <main>
   <h1>Rentmil – Vývoj hledanosti vybraných klíčových slov 2026 / 2025</h1>
-  <p class="subtitle">KWs bazény · data ke Srpnu 2026</p>
+  <p class="subtitle">KWs bazény · data ke Srpnu 2026 · zdroj Google Keyword Planner (CZ, Search + Partners)</p>
 
   <!-- ROW 1: tabulka + executive summary -->
   <div class="two-col">
@@ -337,10 +337,10 @@
       <div class="card-title">Executive Summary</div>
       <div class="exec-summary">
         <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
-          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Celková hledanost leden–srpen 2026 dosáhla <span class="exec-highlight">982 260</span> dotazů – meziroční pokles <span class="exec-highlight">−15 %</span> vs. 2025.</span></li>
-          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Největší propady: srpen <span class="exec-highlight">−44 %</span> a leden <span class="exec-highlight">−43 %</span> – sezóna nastoupila později a po červnovém vrcholu rychleji odezněla.</span></li>
-<li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Z 68 sledovaných KWS jich <span class="exec-pos">13 roste</span> meziročně – potenciál pro cílené posílení výkonu v těchto klíčových slovech.</span></li>
-          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Jediným rostoucím měsícem zůstává květen <span class="exec-highlight">+28 %</span>; červenec <span class="exec-highlight">−28 %</span> a srpen <span class="exec-highlight">−44 %</span> ukazují strmější doběh sezóny než v 2025.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Celková hledanost leden–srpen 2026 dosáhla <span class="exec-highlight">1 043 640</span> dotazů – meziroční pokles <span class="exec-highlight">−11 %</span> vs. 2025.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Největší propady: leden <span class="exec-highlight">−44 %</span> a červenec <span class="exec-highlight">−30 %</span> – sezóna nastoupila výrazně později než v 2025.</span></li>
+<li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Z 68 sledovaných KWS jich <span class="exec-pos">32 roste</span> meziročně – potenciál pro cílené posílení výkonu v těchto klíčových slovech.</span></li>
+          <li style="display:flex;gap:10px;align-items:flex-start"><span style="color:#c45a2a;font-weight:800;font-size:16px;line-height:1.4">·</span><span>Sezóna se posunula: květen <span class="exec-highlight">+26 %</span> a srpen <span class="exec-highlight">+19 %</span> rostou, zatímco jarní měsíce zaostávají. Září bude doplněno, jakmile je Keyword Planner zveřejní.</span></li>
         </ul>
       </div>
     </div>
@@ -370,12 +370,12 @@
     <div class="kpi-card">
       <div class="kpi-icon">🔍</div>
       <div class="kpi-label">Celková hledanost 2026</div>
-      <div class="kpi-value">982 260</div>
+      <div class="kpi-value">1 043 640</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">📉</div>
       <div class="kpi-label">YoY změna</div>
-      <div class="kpi-value neg">−15 %</div>
+      <div class="kpi-value neg">−11 %</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">🗂️</div>
@@ -385,7 +385,7 @@
     <div class="kpi-card">
       <div class="kpi-icon">📈</div>
       <div class="kpi-label">Rostoucích KWS</div>
-      <div class="kpi-value pos">13 <span>/ 68</span></div>
+      <div class="kpi-value pos">32 <span>/ 68</span></div>
     </div>
   </div>
 
@@ -416,9 +416,9 @@
 <script>
 /* ── Prognose (same) data ── */
 const months = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen'];
-const v2025  = [91590, 83060, 112290, 133360, 159380, 312730, 171210, 96870];
-const v2026  = [52480, 64970, 107640, 100410, 204690, 274950, 123090, 54030];
-const change = [-43, -22, -4, -25, 28, -12, -28, -44];
+const v2025  = [92830, 84050, 113930, 135040, 161540, 317950, 174640, 99010];
+const v2026  = [52330, 64770, 107270, 100230, 204130, 274300, 122980, 117630];
+const change = [-44, -23, -6, -26, 26, -14, -30, 19];
 
 /* ── Table ── */
 const fmt = n => n.toLocaleString('cs-CZ');
@@ -526,74 +526,74 @@ function rebuildChart() {
 
 /* ── KWS list ── */
 const kws = [
-  ["nerezove bazeny",90,"−35%","High"],
-  ["bazen na klic",90,"0%","High"],
-  ["zastreseni bazenu 6x3",90,"−18%","High"],
-  ["bazen 4m",90,"91%","High"],
-  ["maly bazen",90,"−35%","High"],
-  ["bazény levně",90,"0%","High"],
-  ["bazen venkovni",90,"−19%","High"],
-  ["celorocni bazen",90,"−46%","High"],
-  ["bazen 3x6",90,"−47%","High"],
-  ["bazen slaný",90,"0%","Low"],
-  ["maly nerezovy bazen",90,"−29%","High"],
-  ["bazen usti",880,"23%","Low"],
-  ["bazen azuro",720,"−34%","High"],
-  ["nadzemní bazény celoroční",590,"−70%","High"],
-  ["bazeny cena",590,"−85%","High"],
-  ["zapuštěné bazény",480,"−45%","High"],
-  ["nerezovy bazen",480,"−28%","High"],
-  ["plastovy bazen",480,"0%","High"],
-  ["nadzemni bazen",480,"−23%","High"],
-  ["zapuštěný bazen",480,"−45%","High"],
-  ["laminatovy bazen",390,"−45%","High"],
-  ["plastové bazény",320,"−19%","High"],
-  ["pevné nadzemní bazény",320,"−52%","High"],
-  ["bazen 5x3",320,"376%","High"],
-  ["bazény",27100,"−33%","High"],
-  ["bazen do zeme",260,"0%","High"],
-  ["laminátové bazény",260,"−33%","High"],
-  ["bazeny kostelec",260,"−18%","Medium"],
-  ["bazen karlovy vary",260,"−19%","Low"],
-  ["nerezové bazény",210,"−33%","High"],
-  ["bazen na zahradu",210,"−19%","High"],
-  ["zahradni bazen",210,"−33%","High"],
-  ["zahradní bazen",210,"−33%","High"],
-  ["bazen 3 66",210,"−19%","High"],
-  ["nerezový bazény",210,"−33%","High"],
-  ["zahradní bazény",1900,"−54%","High"],
-  ["bazény české budějovice",1900,"0%","Low"],
-  ["bazen české budějovice",1900,"0%","Low"],
-  ["bazen",18100,"−18%","High"],
-  ["bazen 3m",170,"−33%","High"],
-  ["celoroční nadzemní bazény",170,"−33%","High"],
-  ["nadzemni bazeny",170,"−18%","High"],
-  ["bazen nadzemni",170,"−19%","High"],
-  ["bazény shop",170,"−19%","High"],
-  ["bazen zastreseni",170,"−19%","High"],
-  ["bazen klise",170,"−21%","Low"],
-  ["bazen roudnice",170,"−18%","Low"],
-  ["bazénu",170,"−46%","High"],
-  ["levné bazény",140,"−56%","High"],
-  ["zapuštěné bazény cena",140,"100%","High"],
-  ["bazény azuro",140,"−46%","High"],
-  ["bazény na míru",140,"−21%","High"],
-  ["bazen 6x3",140,"−19%","High"],
-  ["bazen ovalny",140,"−33%","High"],
-  ["venkovni bazen",140,"−34%","High"],
-  ["luxusní nadzemní bazény",140,"40%","High"],
-  ["bazeny do zahrady",140,"767%","High"],
-  ["bazen uh",140,"56%","Low"],
-  ["bazen havlíčkův brod",1300,"−12%","Low"],
-  ["zapusteny bazen",110,"24%","High"],
-  ["luxusní bazény",110,"−36%","High"],
-  ["levné bazény do země",110,"191%","High"],
-  ["prodej bazénů",110,"21%","High"],
-  ["barva na bazény",110,"−19%","High"],
-  ["bazen 7x3",110,"586%","High"],
-  ["bazeny albixon",110,"−18%","High"],
-  ["levny bazen do zeme",110,"191%","High"],
-  ["plastové bazény skladem",110,"800%","High"],
+  ["bazény",52800,"−18%","High"],
+  ["bazen",39950,"−15%","High"],
+  ["zahradní bazény",2631,"52%","High"],
+  ["bazen české budějovice",1712,"−7%","Low"],
+  ["bazény české budějovice",1712,"−7%","Low"],
+  ["bazen azuro",1618,"−21%","High"],
+  ["nadzemni bazen",1572,"24%","High"],
+  ["bazen na zahradu",1330,"125%","High"],
+  ["bazeny do zahrady",1275,"1862%","High"],
+  ["bazen havlíčkův brod",1069,"−3%","Low"],
+  ["zapuštěné bazény",1024,"−36%","High"],
+  ["zapuštěný bazen",1024,"−36%","High"],
+  ["plastovy bazen",1000,"−2%","High"],
+  ["nerezovy bazen",998,"−8%","High"],
+  ["bazen do zeme",849,"12%","High"],
+  ["bazény shop",826,"39%","High"],
+  ["bazen 5x3",825,"286%","High"],
+  ["laminatovy bazen",815,"−26%","High"],
+  ["bazen 3 66",750,"1%","High"],
+  ["nadzemní bazény celoroční",734,"5%","High"],
+  ["pevné nadzemní bazény",728,"−39%","High"],
+  ["bazen usti",702,"48%","Low"],
+  ["plastové bazény",659,"−2%","High"],
+  ["bazen 3m",652,"−6%","High"],
+  ["zahradni bazen",601,"−14%","High"],
+  ["zahradní bazen",601,"−14%","High"],
+  ["laminátové bazény",556,"6%","High"],
+  ["bazeny kostelec",521,"−11%","High"],
+  ["levné bazény",501,"−32%","High"],
+  ["bazen 3x6",486,"145%","High"],
+  ["levné bazény do země",480,"262%","High"],
+  ["levny bazen do zeme",480,"262%","High"],
+  ["bazen nadzemni",460,"14%","High"],
+  ["venkovni bazen",460,"−7%","High"],
+  ["maly bazen",448,"18%","High"],
+  ["nadzemni bazeny",416,"3%","High"],
+  ["bazény azuro",408,"−26%","High"],
+  ["bazény levně",382,"33%","High"],
+  ["celoroční nadzemní bazény",369,"−25%","High"],
+  ["nerezové bazény",368,"−23%","High"],
+  ["nerezový bazény",368,"−23%","High"],
+  ["bazénu",354,"−45%","High"],
+  ["bazen 6x3",301,"3%","High"],
+  ["bazen karlovy vary",301,"−27%","Low"],
+  ["bazen 7x3",285,"212%","High"],
+  ["zapusteny bazen",281,"2%","High"],
+  ["bazen zastreseni",276,"0%","High"],
+  ["plastové bazény skladem",242,"21%","High"],
+  ["bazeny cena",241,"−36%","High"],
+  ["prodej bazénů",226,"34%","High"],
+  ["barva na bazény",224,"−5%","High"],
+  ["bazen 4m",220,"22%","High"],
+  ["bazen venkovni",212,"−9%","High"],
+  ["bazeny albixon",211,"8%","High"],
+  ["bazen na klic",206,"26%","High"],
+  ["zapuštěné bazény cena",201,"137%","High"],
+  ["bazen ovalny",176,"57%","High"],
+  ["zastreseni bazenu 6x3",174,"−14%","High"],
+  ["bazény na míru",156,"−3%","High"],
+  ["nerezove bazeny",156,"−10%","High"],
+  ["bazen roudnice",144,"−15%","Low"],
+  ["bazen klise",132,"12%","Low"],
+  ["luxusní bazény",116,"−28%","High"],
+  ["bazen uh",110,"2%","Low"],
+  ["bazen slaný",100,"3%","Low"],
+  ["celorocni bazen",91,"−9%","High"],
+  ["luxusní nadzemní bazény",85,"55%","High"],
+  ["maly nerezovy bazen",70,"−58%","High"],
 ];
 
 const kwsTbl = document.getElementById('kws-tbl');
